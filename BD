@@ -1,0 +1,165 @@
+-- Crear la base de datos
+CREATE DATABASE tienda_ropa_calzado;
+USE tienda_ropa_calzado;
+
+-- Tabla producto
+CREATE TABLE producto (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10, 2) NOT NULL,
+    categoria VARCHAR(100),
+    stock INT NOT NULL,
+    imagen_url VARCHAR(255),
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertar productos
+INSERT INTO producto (nombre, descripcion, precio, categoria, stock, imagen_url)
+VALUES 
+('Zapatillas deportivas', 'Zapatillas cómodas para correr', 45.99, 'Calzado', 100, '/img/Tenis.webp'),
+('Camiseta deportiva', 'Camiseta de algodón, perfecta para hacer ejercicio', 15.99, 'Ropa', 200, '/img/CamisaDeportiva.webp'),
+('Pantalones deportivos', 'Pantalones cómodos para entrenar', 29.99, 'Ropa', 150, '/img/Pants.webp'),
+('Botines de cuero', 'Botines elegantes y cómodos para el día a día', 89.99, 'Calzado', 50, '/img/Botin.jpg'),
+('Chaqueta deportiva', 'Chaqueta ligera y cómoda para deportes al aire libre', 59.99, 'Ropa', 80, '/img/Sudadera.webp');
+
+-- Tabla cliente
+CREATE TABLE cliente (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_completo VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    telefono VARCHAR(15),
+    direccion TEXT,
+    ciudad VARCHAR(100),
+    pais VARCHAR(100),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertar clientes
+INSERT INTO cliente (nombre_completo, email, telefono, direccion, ciudad, pais)
+VALUES
+('Juan Pérez', 'juanperez@example.com', '1234567890', 'Calle Falsa 123', 'Ciudad A', 'País X'),
+('Ana Gómez', 'ana.gomez@example.com', '2345678901', 'Calle Real 456', 'Ciudad B', 'País Y'),
+('Carlos Martínez', 'carlos.martinez@example.com', '3456789012', 'Avenida Siempre Viva 789', 'Ciudad C', 'País Z'),
+('Maria Rodríguez', 'maria.rodriguez@example.com', '4567890123', 'Calle 12 de Octubre 101', 'Ciudad D', 'País W'),
+('Lucía Torres', 'lucia.torres@example.com', '5678901234', 'Plaza Mayor 202', 'Ciudad E', 'País V');
+
+-- Tabla carrito
+CREATE TABLE carrito (
+    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+-- Insertar carritos
+INSERT INTO carrito (id_cliente)
+VALUES
+(1),
+(2),
+(3),
+(4),
+(5);
+
+-- Tabla carrito_producto (Productos en el carrito)
+CREATE TABLE carrito_producto (
+    id_carrito INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL,
+    PRIMARY KEY (id_carrito, id_producto),
+    FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito),
+    FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-- Insertar productos en el carrito
+INSERT INTO carrito_producto (id_carrito, id_producto, cantidad)
+VALUES
+(1, 1, 2),
+(1, 2, 1),
+(2, 3, 1),
+(3, 4, 1),
+(4, 5, 1);
+
+-- Tabla pedido_cliente
+CREATE TABLE pedido_cliente (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    estado_pedido ENUM('Pendiente', 'En Proceso', 'Enviado', 'Entregado', 'Cancelado') NOT NULL,
+    fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+-- Insertar pedidos
+INSERT INTO pedido_cliente (id_cliente, total, estado_pedido)
+VALUES
+(1, 91.97, 'Pendiente'),
+(2, 29.99, 'Pendiente'),
+(3, 89.99, 'En Proceso'),
+(4, 59.99, 'Pendiente'),
+(5, 45.99, 'Pendiente');
+
+-- Tabla pago
+CREATE TABLE pago (
+    id_pago INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    id_cliente INT NOT NULL,
+    estado_pago ENUM('Pendiente', 'Completado', 'Fallido', 'Reembolsado') NOT NULL,
+    fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    transaccion_id VARCHAR(255) UNIQUE,  -- ID único de la transacción de PayPal
+    monto DECIMAL(10, 2) NOT NULL,
+    metodo_pago VARCHAR(50) DEFAULT 'PayPal',
+    FOREIGN KEY (id_pedido) REFERENCES pedido_cliente(id_pedido),
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+-- Insertar pagos
+INSERT INTO pago (id_pedido, id_cliente, estado_pago, transaccion_id, monto)
+VALUES
+(1, 1, 'Completado', 'TX12345', 91.97),
+(2, 2, 'Pendiente', NULL, 29.99),
+(3, 3, 'Completado', 'TX67890', 89.99),
+(4, 4, 'Pendiente', NULL, 59.99),
+(5, 5, 'Completado', 'TX11223', 45.99);
+
+-- Tabla envio
+CREATE TABLE envio (
+    id_envio INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    direccion_envio TEXT NOT NULL,
+    estado_envio ENUM('Pendiente', 'Enviado', 'Entregado', 'Cancelado') NOT NULL,
+    fecha_envio TIMESTAMP,
+    fecha_entrega TIMESTAMP,
+    FOREIGN KEY (id_pedido) REFERENCES pedido_cliente(id_pedido)
+);
+
+-- Insertar envíos
+INSERT INTO envio (id_pedido, direccion_envio, estado_envio)
+VALUES
+(1, 'Calle Falsa 123', 'Enviado'),
+(2, 'Calle Real 456', 'Pendiente'),
+(3, 'Avenida Siempre Viva 789', 'Enviado'),
+(4, 'Calle 12 de Octubre 101', 'Pendiente'),
+(5, 'Plaza Mayor 202', 'Pendiente');
+
+-- Tabla devolucion
+CREATE TABLE devolucion (
+    id_devolucion INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL,
+    motivo TEXT,
+    estado_devolucion ENUM('Pendiente', 'Aprobado', 'Rechazado') NOT NULL,
+    fecha_devolucion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_pedido) REFERENCES pedido_cliente(id_pedido),
+    FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-- Insertar devoluciones
+INSERT INTO devolucion (id_pedido, id_producto, cantidad, motivo, estado_devolucion)
+VALUES
+(1, 1, 1, 'Tamaño incorrecto', 'Pendiente'),
+(2, 2, 1, 'Defecto en la tela', 'Pendiente'),
+(3, 4, 1, 'No me gustó el modelo', 'Aprobado'),
+(4, 5, 1, 'Me equivoqué de talla', 'Pendiente'),
+(5, 3, 1, 'No era lo que esperaba', 'Rechazado');
