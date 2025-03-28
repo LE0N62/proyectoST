@@ -1,0 +1,31 @@
+/* Estilos base */
+.navbar {
+    background-color: #8B0000; /* Rojo oscuro */
+    padding: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos de los enlaces */
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: all 0.3s ease-in-out;
+    border-radius: 5px;
+}
+
+/* Efecto al pasar el cursor */
+.navbar a:hover {
+    background-color: black;
+    color: red;
+}
+
+/* Efecto al hacer clic */
+.navbar a:active {
+    transform: scale(0.95);
+}

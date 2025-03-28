@@ -1,0 +1,58 @@
+/* Estilo para el contenedor del mapa */
+.map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0; /* Mayor separación en los márgenes */
+    padding: 20px;
+    background-color: #f4f4f4; /* Fondo claro para el contenedor */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  }
+  
+  /* Estilo del iframe del mapa */
+  iframe {
+    border: 0;
+    width: 100%;
+    max-width: 900px; /* Asegura que el mapa no sea demasiado grande */
+    height: 500px; /* Altura más grande para mayor visibilidad */
+    border-radius: 12px; /* Bordes más redondeados */
+    transition: transform 0.3s ease; /* Efecto suave al hacer hover */
+  }
+  
+  /* Efecto al pasar el cursor sobre el iframe */
+  iframe:hover {
+    transform: scale(1.05); /* Escala el iframe al pasar el cursor */
+  }
+  
+  /* Agregar un borde sutil al contenedor del mapa */
+  .map-container::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 2px solid #8b0000; /* Rojo oscuro para el borde */
+    border-radius: 15px;
+    pointer-events: none; /* No interfere con el clic en el mapa */
+  }
+  
+  /* Estilo de fondo para la página */
+  body {
+    background-color: #f0f0f0; /* Fondo general suave */
+    font-family: 'Arial', sans-serif;
+    color: #333; /* Texto en color oscuro para contraste */
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Estilo de la cabecera */
+  h1 {
+    font-size: 2.5rem;
+    color: #8b0000; /* Rojo oscuro para el título */
+    text-align: center;
+    margin-top: 50px;
+    font-weight: bold;
+  }
+  
